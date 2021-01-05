@@ -38,6 +38,7 @@
 
 #define BTSTACK_FILE__ "btstack_memory.c"
 
+
 /*
  *  btstack_memory.c
  *
@@ -517,6 +518,53 @@ hfp_connection_t * btstack_memory_hfp_connection_get(void){
 }
 void btstack_memory_hfp_connection_free(hfp_connection_t *hfp_connection){
     free(hfp_connection);
+}
+#endif
+
+
+
+// MARK: hid_host_connection_t
+#if !defined(HAVE_MALLOC) && !defined(MAX_NR_HID_HOST_CONNECTIONS)
+    #if defined(MAX_NO_HID_HOST_CONNECTIONS)
+        #error "Deprecated MAX_NO_HID_HOST_CONNECTIONS defined instead of MAX_NR_HID_HOST_CONNECTIONS. Please update your btstack_config.h to use MAX_NR_HID_HOST_CONNECTIONS."
+    #else
+        #define MAX_NR_HID_HOST_CONNECTIONS 0
+    #endif
+#endif
+
+#ifdef MAX_NR_HID_HOST_CONNECTIONS
+#if MAX_NR_HID_HOST_CONNECTIONS > 0
+static hid_host_connection_t hid_host_connection_storage[MAX_NR_HID_HOST_CONNECTIONS];
+static btstack_memory_pool_t hid_host_connection_pool;
+hid_host_connection_t * btstack_memory_hid_host_connection_get(void){
+    void * buffer = btstack_memory_pool_get(&hid_host_connection_pool);
+    if (buffer){
+        memset(buffer, 0, sizeof(hid_host_connection_t));
+    }
+    return (hid_host_connection_t *) buffer;
+}
+void btstack_memory_hid_host_connection_free(hid_host_connection_t *hid_host_connection){
+    btstack_memory_pool_free(&hid_host_connection_pool, hid_host_connection);
+}
+#else
+hid_host_connection_t * btstack_memory_hid_host_connection_get(void){
+    return NULL;
+}
+void btstack_memory_hid_host_connection_free(hid_host_connection_t *hid_host_connection){
+    // silence compiler warning about unused parameter in a portable way
+    (void) hid_host_connection;
+};
+#endif
+#elif defined(HAVE_MALLOC)
+hid_host_connection_t * btstack_memory_hid_host_connection_get(void){
+    void * buffer = malloc(sizeof(hid_host_connection_t));
+    if (buffer){
+        memset(buffer, 0, sizeof(hid_host_connection_t));
+    }
+    return (hid_host_connection_t *) buffer;
+}
+void btstack_memory_hid_host_connection_free(hid_host_connection_t *hid_host_connection){
+    free(hid_host_connection);
 }
 #endif
 
@@ -1255,6 +1303,9 @@ void btstack_memory_init(void){
 #endif
 #if MAX_NR_HFP_CONNECTIONS > 0
     btstack_memory_pool_create(&hfp_connection_pool, hfp_connection_storage, MAX_NR_HFP_CONNECTIONS, sizeof(hfp_connection_t));
+#endif
+#if MAX_NR_HID_HOST_CONNECTIONS > 0
+    btstack_memory_pool_create(&hid_host_connection_pool, hid_host_connection_storage, MAX_NR_HID_HOST_CONNECTIONS, sizeof(hid_host_connection_t));
 #endif
 #if MAX_NR_SERVICE_RECORD_ITEMS > 0
     btstack_memory_pool_create(&service_record_item_pool, service_record_item_storage, MAX_NR_SERVICE_RECORD_ITEMS, sizeof(service_record_item_t));
