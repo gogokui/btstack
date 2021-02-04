@@ -60,7 +60,7 @@ VPATH += ${BTSTACK_ROOT}/chipset/tc3566x
 
 # EXAMPLES = ${EXAMPLES_GENERAL} ${EXAMPLES_CLASSIC_ONLY} ${EXAMPLES_LE_ONLY} ${EXAMPLES_DUAL_MODE}
 # EXAMPLES += pan_lwip_http_server
-EXAMPLES += gap_inquiry
+EXAMPLES += gap_inquiry a2dp_sink_demo
 
 # use pkg-config for portaudio
 # CFLAGS  += $(shell pkg-config portaudio-2.0 --cflags) -DHAVE_PORTAUDIO

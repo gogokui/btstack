@@ -86,7 +86,7 @@ static hci_transport_config_uart_t config = {
     HCI_TRANSPORT_CONFIG_UART,
     115200,
     0,  // main baudrate
-    1,  // flow control
+    0,  // flow control
     NULL,
 };
 
@@ -186,6 +186,7 @@ static void local_version_information_handler(uint8_t * packet){
             break;
         case BLUETOOTH_COMPANY_ID_TEXAS_INSTRUMENTS_INC: 
             printf("Texas Instruments - CC256x compatible chipset.\n");
+#if 0
             if (lmp_subversion != btstack_chipset_cc256x_lmp_subversion()){
                 printf("Error: LMP Subversion does not match initscript! ");
                 printf("Your initscripts is for %s chipset\n", btstack_chipset_cc256x_lmp_subversion() < lmp_subversion ? "an older" : "a newer");
@@ -200,6 +201,7 @@ static void local_version_information_handler(uint8_t * packet){
             printf("eHCILL disable.\n");
 #endif
 
+#endif
             break;
         case BLUETOOTH_COMPANY_ID_BROADCOM_CORPORATION:   
             printf("Broadcom/Cypress - using BCM driver.\n");
@@ -246,7 +248,8 @@ int main(int argc, const char * argv[]){
     // config.device_name = "/dev/tty.usbserial-A900K2WS"; // DFROBOT
     // config.device_name = "/dev/tty.usbserial-A50285BI"; // BOOST-CC2564MODA New
     // config.device_name = "/dev/tty.usbserial-A9OVNX5P"; // RedBear IoT pHAT breakout board
-    config.device_name = "/dev/tty.usbserial-A900K0VK"; // CSR8811 breakout board
+    // config.device_name = "/dev/tty.usbserial-A900K0VK"; // CSR8811 breakout board
+    config.device_name = "/dev/ttyS6";
 
     // accept path from command line
     if (argc >= 3 && strcmp(argv[1], "-u") == 0){
